@@ -10,15 +10,16 @@ import {
   TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {primaryColor, secondarColor} from 'Constants/Theme';
 
 const {width} = Dimensions.get('window');
 
-function LoginComponent() {
+export default function LoginComponent(): JSX.Element {
   const [iconName, setIconName] = useState('ios-eye-off');
   const [showPassword, setShowPassword] = useState(true);
 
-  const showPasswordFunc = () => {
-    if (iconName == 'ios-eye') {
+  const showPasswordFunc = (): void => {
+    if (iconName === 'ios-eye') {
       setIconName('ios-eye-off');
       setShowPassword(true);
     } else {
@@ -28,17 +29,17 @@ function LoginComponent() {
   };
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#00b2b2" barStyle="light-content" />
+      <StatusBar backgroundColor={primaryColor} barStyle="light-content" />
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image style={styles.logo} source={require('../Assets/car.png')} />
+          <Image style={styles.logo} source={require('Assets/car.png')} />
           {/* <Text style={styles.logoText}>Parking</Text> */}
         </View>
         <TouchableOpacity style={styles.btn}>
           <Text style={styles.btnText}>Create Account</Text>
         </TouchableOpacity>
       </View>
-      <Image style={styles.image} source={require('../Assets/login.jpg')} />
+      <Image style={styles.image} source={require('Assets/login.jpg')} />
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
           <Icon name="ios-person" size={20} color="#007f7f" />
@@ -56,10 +57,7 @@ function LoginComponent() {
             style={styles.input}
             secureTextEntry={showPassword}
           />
-          <TouchableOpacity
-            onPress={() => {
-              showPasswordFunc();
-            }}>
+          <TouchableOpacity onPress={showPasswordFunc}>
             <Icon name={iconName} size={20} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -79,8 +77,6 @@ function LoginComponent() {
   );
 }
 
-export default LoginComponent;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -92,7 +88,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 60,
     padding: 10,
-    backgroundColor: '#00b2b2',
+    backgroundColor: primaryColor,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
   },
@@ -108,7 +104,7 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontSize: 22,
-    color: '#007f7f',
+    color: secondarColor,
     fontWeight: 'bold',
     marginLeft: 10,
   },
@@ -116,7 +112,7 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 5,
     paddingBottom: 5,
-    backgroundColor: '#007f7f',
+    backgroundColor: secondarColor,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
@@ -146,7 +142,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 15,
     borderWidth: 0.5,
-    borderColor: '#007f7f',
+    borderColor: secondarColor,
     padding: 10,
     alignItems: 'center',
     alignContent: 'center',
@@ -162,7 +158,7 @@ const styles = StyleSheet.create({
   btn2: {
     width: '100%',
     height: 40,
-    backgroundColor: '#007f7f',
+    backgroundColor: secondarColor,
     borderRadius: 15,
     justifyContent: 'center',
     alignContent: 'center',
@@ -179,7 +175,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   text: {
-    color: '#007f7f',
+    color: secondarColor,
     marginTop: 5,
   },
 });

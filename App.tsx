@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, StatusBar} from 'react-native';
-import LoginComponent from './App/Components/LoginComponent';
+import LoginComponent from 'Screens/LoginComponent';
 
 function App() {
   return (
