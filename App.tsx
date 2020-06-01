@@ -1,12 +1,12 @@
 import React from 'react';
 import {View, StyleSheet, StatusBar} from 'react-native';
-import LoginComponent from 'Screens/LoginComponent';
+import LoginScreen from './src/Screens/LoginScreen';
 
 function App() {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-      <LoginComponent />
+      <LoginScreen />
     </View>
   );
 }

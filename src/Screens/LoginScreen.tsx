@@ -10,11 +10,11 @@ import {
   TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {primaryColor, secondarColor} from 'Constants/Theme';
+import {primaryColor, secondarColor} from '../Constants/Theme';
 
 const {width} = Dimensions.get('window');
 
-export default function LoginComponent(): JSX.Element {
+const LoginScreen = (): JSX.Element => {
   const [iconName, setIconName] = useState('ios-eye-off');
   const [showPassword, setShowPassword] = useState(true);
 
@@ -32,14 +32,14 @@ export default function LoginComponent(): JSX.Element {
       <StatusBar backgroundColor={primaryColor} barStyle="light-content" />
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image style={styles.logo} source={require('Assets/car.png')} />
+          <Image style={styles.logo} source={require('../Assets/car.png')} />
           {/* <Text style={styles.logoText}>Parking</Text> */}
         </View>
         <TouchableOpacity style={styles.btn}>
           <Text style={styles.btnText}>Create Account</Text>
         </TouchableOpacity>
       </View>
-      <Image style={styles.image} source={require('Assets/login.jpg')} />
+      <Image style={styles.image} source={require('../Assets/login.jpg')} />
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
           <Icon name="ios-person" size={20} color="#007f7f" />
@@ -75,7 +75,9 @@ export default function LoginComponent(): JSX.Element {
       </View>
     </View>
   );
-}
+};
+
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
