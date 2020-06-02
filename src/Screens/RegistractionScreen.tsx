@@ -14,11 +14,13 @@ import {primaryColor, secondarColor} from '../Constants/Theme';
 
 const {width} = Dimensions.get('window');
 
-const LoginScreen = (props: any): JSX.Element => {
+const RegistrationScreen = (props: any): JSX.Element => {
   const [iconName, setIconName] = useState('ios-eye-off');
   const [showPassword, setShowPassword] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [address, setAddress] = useState('');
+  const [flatNo, setFlatNo] = useState('');
 
   const showPasswordFunc = (): void => {
     if (iconName === 'ios-eye') {
@@ -30,27 +32,25 @@ const LoginScreen = (props: any): JSX.Element => {
     }
   };
 
-  const login = (): void => {
-    props.navigation.navigate('Drawer');
+  const navigaateToLogin = (): void => {
+    props.navigation.goBack();
   };
 
-  const navigaateToRegister = (): void => {
-    props.navigation.navigate('Register');
-  };
+  const register = (): void => {};
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={primaryColor} barStyle="light-content" />
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Image style={styles.logo} source={require('../Assets/car.png')} />
-          {/* <Text style={styles.logoText}>Parking</Text> */}
+        <View style={styles.headerTop}>
+          <Text style={styles.logoText}>App_NAME</Text>
+          <TouchableOpacity style={styles.btn} onPress={navigaateToLogin}>
+            <Text style={styles.btnText}>Login</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.btn} onPress={navigaateToRegister}>
-          <Text style={styles.btnText}>Create Account</Text>
-        </TouchableOpacity>
+        <Image style={styles.logo} source={require('../Assets/car.png')} />
       </View>
-      <Image style={styles.image} source={require('../Assets/login.jpg')} />
+      <Text style={styles.signUp}>Sign Up Form</Text>
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
           <Icon name="ios-person" size={20} color="#007f7f" />
@@ -60,6 +60,26 @@ const LoginScreen = (props: any): JSX.Element => {
             style={styles.input}
             value={email}
             onChangeText={(text) => setEmail(text)}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon name="ios-locate" size={20} color="#007f7f" />
+          <TextInput
+            placeholder="Enter address..."
+            placeholderTextColor="gray"
+            style={styles.input}
+            value={address}
+            onChangeText={(text) => setAddress(text)}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon name="ios-home" size={20} color="#007f7f" />
+          <TextInput
+            placeholder="Enter flat no..."
+            placeholderTextColor="gray"
+            style={styles.input}
+            value={flatNo}
+            onChangeText={(text) => setFlatNo(text)}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -76,23 +96,15 @@ const LoginScreen = (props: any): JSX.Element => {
             <Icon name={iconName} size={20} color="#007f7f" />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.btn2} onPress={login}>
-          <Text style={styles.loginText}>Login</Text>
+        <TouchableOpacity style={styles.btn2} onPress={register}>
+          <Text style={styles.RegistrationText}>Register</Text>
         </TouchableOpacity>
-        <View style={styles.options}>
-          <TouchableOpacity>
-            <Text style={styles.text}>Remember Me</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.text}>Forgot Password ?</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </View>
   );
 };
 
-export default LoginScreen;
+export default RegistrationScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -100,28 +112,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 60,
+    height: 300,
     padding: 10,
     backgroundColor: primaryColor,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
+    elevation: 20,
   },
-  headerLeft: {
-    justifyContent: 'center',
+  headerTop: {
+    justifyContent: 'space-between',
+    padding: 10,
+    paddingTop: 0,
+    width: width,
     alignItems: 'center',
     flexDirection: 'row',
   },
   logo: {
-    height: 40,
-    width: 80,
+    height: width - 250,
+    width: width - 60,
     transform: [{rotateY: '180deg'}],
+    marginBottom: 20,
   },
   logoText: {
     fontSize: 22,
-    color: secondarColor,
+    color: '#fff',
     fontWeight: 'bold',
     marginLeft: 10,
   },
@@ -134,24 +150,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     elevation: 10,
+    alignSelf: 'flex-end',
   },
   btnText: {
     color: '#fff',
   },
-  image: {
-    width: width - 40,
-    height: width - 40,
+  signUp: {
+    fontSize: 28,
+    color: secondarColor,
+    fontWeight: 'bold',
     alignSelf: 'center',
-    marginTop: 30,
+    marginTop: 20,
   },
   formContainer: {
     width: '90%',
-    // backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 10,
     alignSelf: 'center',
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
-    marginTop: 40,
+    marginTop: 10,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -182,17 +199,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 10,
   },
-  loginText: {
+  RegistrationText: {
     color: '#fff',
     fontSize: 17,
-  },
-  options: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  text: {
-    color: secondarColor,
-    marginTop: 5,
   },
 });

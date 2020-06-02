@@ -1,12 +1,11 @@
 import React from 'react';
-import {View, StyleSheet, StatusBar} from 'react-native';
-import LoginScreen from './src/Screens/LoginScreen';
+import {View, StyleSheet} from 'react-native';
+import MainStackNavigator from './src/Config/MainStackNavigator';
 
 function App() {
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-      <LoginScreen />
+      <MainStackNavigator />
     </View>
   );
 }
