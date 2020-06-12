@@ -30,7 +30,7 @@ function CustomDrawerContent(props: any) {
             style={styles.profile}
           />
           <View>
-            <Text style={styles.title}>User_name</Text>
+            <Text style={styles.title}>{props.user_name}</Text>
           </View>
           <View style={styles.data}>
             <View style={styles.following}>
@@ -80,13 +80,18 @@ function CustomDrawerContent(props: any) {
   );
 }
 
-function MyDrawer() {
+function MyDrawer(props: any) {
   return (
     <Drawer.Navigator
       drawerType="front"
       edgeWidth={100}
       initialRouteName="Home"
-      drawerContent={(props) => <CustomDrawerContent {...props} />}>
+      drawerContent={(props_) => (
+        <CustomDrawerContent
+          {...props_}
+          user_name={props.route.params.user_name}
+        />
+      )}>
       <Drawer.Screen name="Home" component={HomeScreen} />
       <Drawer.Screen name="Analysis" component={AnalysisScreen} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />

@@ -9,8 +9,9 @@ import {
   Text,
   TextInput,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {primaryColor, secondarColor} from '../Constants/Theme';
+import {primaryColor, secondarColor, baseURL} from '../Constants/Theme';
 
 const {width} = Dimensions.get('window');
 
@@ -30,8 +31,46 @@ const LoginScreen = (props: any): JSX.Element => {
     }
   };
 
-  const login = (): void => {
-    props.navigation.navigate('Drawer');
+  const validateEmail = (email_: string): boolean => {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email_).toLowerCase());
+  };
+
+  const login = async (): Promise<void> => {
+    if (!validateEmail(email)) {
+      console.log('Not a valid email');
+      return;
+    }
+    if (password.length < 5) {
+      console.log('Not a valid password');
+      return;
+    }
+    const data: {email: string; password: string} = {
+      email: email,
+      password: password,
+    };
+    try {
+      const response = await fetch(`${baseURL}auth/user_login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      var json = await response.json();
+      //console.log(json);
+      if (json.status !== 200) {
+        return;
+      }
+      await AsyncStorage.setItem('@Store:auth-token', json.data[0].token);
+    } catch (error) {
+      console.log('This is error');
+      console.log(error);
+      return;
+    }
+    props.navigation.navigate('Drawer', {user_name: json.data[0].user_name});
+    console.log(await AsyncStorage.getItem('@Store:auth-token'));
+    console.log(json.data[0].user_name);
   };
 
   const navigaateToRegister = (): void => {

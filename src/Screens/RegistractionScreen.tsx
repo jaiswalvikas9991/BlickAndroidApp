@@ -10,7 +10,8 @@ import {
   TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {primaryColor, secondarColor} from '../Constants/Theme';
+import {primaryColor, secondarColor, baseURL} from '../Constants/Theme';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const {width} = Dimensions.get('window');
 
@@ -36,36 +37,74 @@ const RegistrationScreen = (props: any): JSX.Element => {
     props.navigation.goBack();
   };
 
-  const register = (): void => {};
+  const validateEmail = (email_: string): boolean => {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email_).toLowerCase());
+  };
+
+  const register = async (): Promise<void> => {
+    if (!validateEmail(email)) {
+      console.log('Not a valid email');
+      return;
+    }
+    if (password.length < 5) {
+      console.log('Not a valid password');
+      return;
+    }
+    if (address.length <= 0) {
+      console.log('Building Id must not be empty');
+      return;
+    }
+    if (flatNo.length < 0) {
+      console.log('Flat Number must not be empty');
+      return;
+    }
+    const data = {
+      email: email,
+      password: password,
+      building_id: address,
+      flat_no: flatNo,
+    };
+    console.log(JSON.stringify(data));
+    try {
+      const response = await fetch(`${baseURL}/auth/user_signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      var json = await response.json();
+      if (json.status !== 200) {
+        throw new Error(json.errors);
+      }
+      await AsyncStorage.setItem('@Store:auth-token', json.data[0].token);
+      console.log(json);
+    } catch (error) {
+      console.log(JSON.stringify(error));
+      return;
+    }
+    props.navigation.navigate('Drawer', {user_name: json.data[0].user_name});
+  };
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={primaryColor} barStyle="light-content" />
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <Text style={styles.logoText}>App_NAME</Text>
+          <Text style={styles.logoText}>Blick</Text>
           <TouchableOpacity style={styles.btn} onPress={navigaateToLogin}>
             <Text style={styles.btnText}>Login</Text>
           </TouchableOpacity>
         </View>
         <Image style={styles.logo} source={require('../Assets/car.png')} />
       </View>
-      <Text style={styles.signUp}>Sign Up Form</Text>
+      <Text style={styles.signUp}>Sign Up</Text>
       <View style={styles.formContainer}>
-        <View style={styles.inputContainer}>
-          <Icon name="ios-person" size={20} color="#007f7f" />
-          <TextInput
-            placeholder="Enter email address..."
-            placeholderTextColor="gray"
-            style={styles.input}
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          />
-        </View>
         <View style={styles.inputContainer}>
           <Icon name="ios-locate" size={20} color="#007f7f" />
           <TextInput
-            placeholder="Enter address..."
+            placeholder="Enter building Id..."
             placeholderTextColor="gray"
             style={styles.input}
             value={address}
@@ -80,6 +119,16 @@ const RegistrationScreen = (props: any): JSX.Element => {
             style={styles.input}
             value={flatNo}
             onChangeText={(text) => setFlatNo(text)}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon name="ios-person" size={20} color="#007f7f" />
+          <TextInput
+            placeholder="Enter email address..."
+            placeholderTextColor="gray"
+            style={styles.input}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
           />
         </View>
         <View style={styles.inputContainer}>
