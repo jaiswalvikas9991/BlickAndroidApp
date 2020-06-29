@@ -8,10 +8,18 @@ import {
   TouchableOpacity,
   Text,
   TextInput,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {primaryColor, secondarColor, baseURL} from '../Constants/Theme';
+import {
+  primaryColor,
+  secondaryColor,
+  baseURL,
+  authKey,
+} from '../Constants/Theme';
 import AsyncStorage from '@react-native-community/async-storage';
+import {ScrollView} from 'react-native-gesture-handler';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const {width} = Dimensions.get('window');
 
@@ -22,6 +30,7 @@ const RegistrationScreen = (props: any): JSX.Element => {
   const [password, setPassword] = useState('');
   const [address, setAddress] = useState('');
   const [flatNo, setFlatNo] = useState('');
+  const [spinner, setSpinner] = useState(false);
 
   const showPasswordFunc = (): void => {
     if (iconName === 'ios-eye') {
@@ -42,28 +51,38 @@ const RegistrationScreen = (props: any): JSX.Element => {
     return re.test(String(email_).toLowerCase());
   };
 
+  const signUpHelper = async () => {
+    setSpinner(true);
+    await register();
+    setSpinner(false);
+  };
+
   const register = async (): Promise<void> => {
     if (!validateEmail(email)) {
       console.log('Not a valid email');
+      Alert.alert('Not a valid email');
       return;
     }
     if (password.length < 5) {
       console.log('Not a valid password');
+      Alert.alert('Password Must of atleast of length 5');
       return;
     }
     if (address.length <= 0) {
       console.log('Building Id must not be empty');
+      Alert.alert('Building Id must not be empty');
       return;
     }
     if (flatNo.length < 0) {
       console.log('Flat Number must not be empty');
+      Alert.alert('Flat Number must not be empty');
       return;
     }
     const data = {
       email: email,
       password: password,
       building_id: address,
-      flat_no: flatNo,
+      flat_id: flatNo,
     };
     console.log(JSON.stringify(data));
     try {
@@ -78,78 +97,95 @@ const RegistrationScreen = (props: any): JSX.Element => {
       if (json.status !== 200) {
         throw new Error(json.errors);
       }
-      await AsyncStorage.setItem('@Store:auth-token', json.data[0].token);
+      await AsyncStorage.setItem(authKey, json.data[0].token);
       console.log(json);
     } catch (error) {
       console.log(JSON.stringify(error));
+      Alert.alert(error.message);
       return;
     }
-    props.navigation.navigate('Drawer', {user_name: json.data[0].user_name});
+    props.navigation.navigate('Drawer', {
+      user_data: {
+        user_name: json.data[0].user_name,
+        building_id: json.data[0].building_id,
+        flat_id: json.data[0].flat_id,
+      },
+    });
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor={primaryColor} barStyle="light-content" />
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Text style={styles.logoText}>Blick</Text>
-          <TouchableOpacity style={styles.btn} onPress={navigaateToLogin}>
-            <Text style={styles.btnText}>Login</Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <Spinner
+          //visibility of Overlay Loading Spinner
+          visible={spinner}
+          //Text with the Spinner
+          textContent={'Loading...'}
+          //Text style of the Spinner Text
+          textStyle={{color: primaryColor}}
+        />
+        <StatusBar backgroundColor={primaryColor} barStyle="light-content" />
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <Text style={styles.logoText}>Blick</Text>
+            <TouchableOpacity style={styles.btn} onPress={navigaateToLogin}>
+              <Text style={styles.btnText}>Login</Text>
+            </TouchableOpacity>
+          </View>
+          <Image style={styles.logo} source={require('../Assets/car.png')} />
+        </View>
+        <Text style={styles.signUp}>Sign Up</Text>
+        <View style={styles.formContainer}>
+          <View style={styles.inputContainer}>
+            <Icon name="ios-locate" size={20} color="#007f7f" />
+            <TextInput
+              placeholder="Enter building Id..."
+              placeholderTextColor="gray"
+              style={styles.input}
+              value={address}
+              onChangeText={(text) => setAddress(text)}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Icon name="ios-home" size={20} color="#007f7f" />
+            <TextInput
+              placeholder="Enter flat no..."
+              placeholderTextColor="gray"
+              style={styles.input}
+              value={flatNo}
+              onChangeText={(text) => setFlatNo(text)}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Icon name="ios-person" size={20} color="#007f7f" />
+            <TextInput
+              placeholder="Enter email address..."
+              placeholderTextColor="gray"
+              style={styles.input}
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Icon name="ios-key" size={20} color="#007f7f" />
+            <TextInput
+              placeholder="Enter password..."
+              placeholderTextColor="gray"
+              style={styles.input}
+              secureTextEntry={showPassword}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <TouchableOpacity onPress={showPasswordFunc}>
+              <Icon name={iconName} size={20} color="#007f7f" />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.btn2} onPress={signUpHelper}>
+            <Text style={styles.RegistrationText}>Register</Text>
           </TouchableOpacity>
         </View>
-        <Image style={styles.logo} source={require('../Assets/car.png')} />
       </View>
-      <Text style={styles.signUp}>Sign Up</Text>
-      <View style={styles.formContainer}>
-        <View style={styles.inputContainer}>
-          <Icon name="ios-locate" size={20} color="#007f7f" />
-          <TextInput
-            placeholder="Enter building Id..."
-            placeholderTextColor="gray"
-            style={styles.input}
-            value={address}
-            onChangeText={(text) => setAddress(text)}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Icon name="ios-home" size={20} color="#007f7f" />
-          <TextInput
-            placeholder="Enter flat no..."
-            placeholderTextColor="gray"
-            style={styles.input}
-            value={flatNo}
-            onChangeText={(text) => setFlatNo(text)}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Icon name="ios-person" size={20} color="#007f7f" />
-          <TextInput
-            placeholder="Enter email address..."
-            placeholderTextColor="gray"
-            style={styles.input}
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Icon name="ios-key" size={20} color="#007f7f" />
-          <TextInput
-            placeholder="Enter password..."
-            placeholderTextColor="gray"
-            style={styles.input}
-            secureTextEntry={showPassword}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-          />
-          <TouchableOpacity onPress={showPasswordFunc}>
-            <Icon name={iconName} size={20} color="#007f7f" />
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity style={styles.btn2} onPress={register}>
-          <Text style={styles.RegistrationText}>Register</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -194,7 +230,7 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 5,
     paddingBottom: 5,
-    backgroundColor: secondarColor,
+    backgroundColor: secondaryColor,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
@@ -206,7 +242,7 @@ const styles = StyleSheet.create({
   },
   signUp: {
     fontSize: 28,
-    color: secondarColor,
+    color: secondaryColor,
     fontWeight: 'bold',
     alignSelf: 'center',
     marginTop: 20,
@@ -225,14 +261,14 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 15,
     borderWidth: 0.5,
-    borderColor: secondarColor,
+    borderColor: secondaryColor,
     padding: 10,
     alignItems: 'center',
     alignContent: 'center',
     marginBottom: 15,
   },
   input: {
-    color: secondarColor,
+    color: secondaryColor,
     fontSize: 15,
     height: 40,
     paddingLeft: 15,
@@ -241,7 +277,7 @@ const styles = StyleSheet.create({
   btn2: {
     width: '100%',
     height: 40,
-    backgroundColor: secondarColor,
+    backgroundColor: secondaryColor,
     borderRadius: 15,
     justifyContent: 'center',
     alignContent: 'center',

@@ -5,7 +5,7 @@ import {
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer';
-import {primaryColor, secondarColor} from '../Constants/Theme';
+import {primaryColor, secondaryColor} from '../Constants/Theme';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from '../Screens/HomeScreen';
 import AnalysisScreen from '../Screens/AnalysisScreen';
@@ -30,7 +30,7 @@ function CustomDrawerContent(props: any) {
             style={styles.profile}
           />
           <View>
-            <Text style={styles.title}>{props.user_name}</Text>
+            <Text style={styles.title}>{props.params.user_name}</Text>
           </View>
           <View style={styles.data}>
             <View style={styles.following}>
@@ -51,7 +51,12 @@ function CustomDrawerContent(props: any) {
         </View>
         <DrawerItem
           label={() => <Text style={styles.label}>Home</Text>}
-          onPress={() => props.navigation.navigate('Home')}
+          onPress={() =>
+            props.navigation.navigate('Home', {
+              params: props.params,
+              to: 'Hello',
+            })
+          }
           icon={() => <Icon name="home" size={22} color="#000" />}
         />
         <DrawerItem
@@ -85,11 +90,11 @@ function MyDrawer(props: any) {
     <Drawer.Navigator
       drawerType="front"
       edgeWidth={100}
-      initialRouteName="Home"
+      initialRouteName="Help"
       drawerContent={(props_) => (
         <CustomDrawerContent
           {...props_}
-          user_name={props.route.params.user_name}
+          params={props.route.params.user_data}
         />
       )}>
       <Drawer.Screen name="Home" component={HomeScreen} />
@@ -107,7 +112,7 @@ export default MyDrawer;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: secondarColor,
+    backgroundColor: secondaryColor,
   },
   header: {
     height: 60,

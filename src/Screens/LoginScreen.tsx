@@ -8,10 +8,18 @@ import {
   TouchableOpacity,
   Text,
   TextInput,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {primaryColor, secondarColor, baseURL} from '../Constants/Theme';
+import {
+  primaryColor,
+  secondaryColor,
+  baseURL,
+  authKey,
+} from '../Constants/Theme';
+import Spinner from 'react-native-loading-spinner-overlay';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const {width} = Dimensions.get('window');
 
@@ -20,6 +28,7 @@ const LoginScreen = (props: any): JSX.Element => {
   const [showPassword, setShowPassword] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [spinner, setSpinner] = useState(false);
 
   const showPasswordFunc = (): void => {
     if (iconName === 'ios-eye') {
@@ -36,13 +45,21 @@ const LoginScreen = (props: any): JSX.Element => {
     return re.test(String(email_).toLowerCase());
   };
 
+  const loginHelper = async () => {
+    setSpinner(true);
+    await login();
+    setSpinner(false);
+  };
+
   const login = async (): Promise<void> => {
     if (!validateEmail(email)) {
       console.log('Not a valid email');
+      Alert.alert('Not a valid email');
       return;
     }
     if (password.length < 5) {
       console.log('Not a valid password');
+      Alert.alert('Password must be greater than length 5');
       return;
     }
     const data: {email: string; password: string} = {
@@ -62,72 +79,89 @@ const LoginScreen = (props: any): JSX.Element => {
       if (json.status !== 200) {
         return;
       }
-      await AsyncStorage.setItem('@Store:auth-token', json.data[0].token);
+      await AsyncStorage.setItem(authKey, json.data[0].token);
     } catch (error) {
       console.log('This is error');
       console.log(error);
+      Alert.alert('Server Error');
       return;
     }
-    props.navigation.navigate('Drawer', {user_name: json.data[0].user_name});
-    console.log(await AsyncStorage.getItem('@Store:auth-token'));
+    props.navigation.navigate('Drawer', {
+      user_data: {
+        user_name: json.data[0].user_name,
+        building_id: json.data[0].building_id,
+        flat_id: json.data[0].flat_id,
+      },
+    });
+    console.log(await AsyncStorage.getItem(authKey));
     console.log(json.data[0].user_name);
   };
 
-  const navigaateToRegister = (): void => {
+  const navigateToRegister = (): void => {
     props.navigation.navigate('Register');
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor={primaryColor} barStyle="light-content" />
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Image style={styles.logo} source={require('../Assets/car.png')} />
-          {/* <Text style={styles.logoText}>Parking</Text> */}
+    <ScrollView>
+      <View style={styles.container}>
+        <Spinner
+          //visibility of Overlay Loading Spinner
+          visible={spinner}
+          //Text with the Spinner
+          textContent={'Loading...'}
+          //Text style of the Spinner Text
+          textStyle={{color: primaryColor}}
+        />
+        <StatusBar backgroundColor={primaryColor} barStyle="light-content" />
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Image style={styles.logo} source={require('../Assets/car.png')} />
+            {/* <Text style={styles.logoText}>Parking</Text> */}
+          </View>
+          <TouchableOpacity style={styles.btn} onPress={navigateToRegister}>
+            <Text style={styles.btnText}>Create Account</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.btn} onPress={navigaateToRegister}>
-          <Text style={styles.btnText}>Create Account</Text>
-        </TouchableOpacity>
+        <Image style={styles.image} source={require('../Assets/login.jpg')} />
+        <View style={styles.formContainer}>
+          <View style={styles.inputContainer}>
+            <Icon name="ios-person" size={20} color="#007f7f" />
+            <TextInput
+              placeholder="Enter email address..."
+              placeholderTextColor="gray"
+              style={styles.input}
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Icon name="ios-key" size={20} color="#007f7f" />
+            <TextInput
+              placeholder="Enter password..."
+              placeholderTextColor="gray"
+              style={styles.input}
+              secureTextEntry={showPassword}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <TouchableOpacity onPress={showPasswordFunc}>
+              <Icon name={iconName} size={20} color="#007f7f" />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.btn2} onPress={loginHelper}>
+            <Text style={styles.loginText}>Login</Text>
+          </TouchableOpacity>
+          <View style={styles.options}>
+            <TouchableOpacity>
+              <Text style={styles.text}>Remember Me</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.text}>Forgot Password ?</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
-      <Image style={styles.image} source={require('../Assets/login.jpg')} />
-      <View style={styles.formContainer}>
-        <View style={styles.inputContainer}>
-          <Icon name="ios-person" size={20} color="#007f7f" />
-          <TextInput
-            placeholder="Enter email address..."
-            placeholderTextColor="gray"
-            style={styles.input}
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Icon name="ios-key" size={20} color="#007f7f" />
-          <TextInput
-            placeholder="Enter password..."
-            placeholderTextColor="gray"
-            style={styles.input}
-            secureTextEntry={showPassword}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-          />
-          <TouchableOpacity onPress={showPasswordFunc}>
-            <Icon name={iconName} size={20} color="#007f7f" />
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity style={styles.btn2} onPress={login}>
-          <Text style={styles.loginText}>Login</Text>
-        </TouchableOpacity>
-        <View style={styles.options}>
-          <TouchableOpacity>
-            <Text style={styles.text}>Remember Me</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.text}>Forgot Password ?</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -160,7 +194,7 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontSize: 22,
-    color: secondarColor,
+    color: secondaryColor,
     fontWeight: 'bold',
     marginLeft: 10,
   },
@@ -168,7 +202,7 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 5,
     paddingBottom: 5,
-    backgroundColor: secondarColor,
+    backgroundColor: secondaryColor,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
@@ -198,14 +232,14 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 15,
     borderWidth: 0.5,
-    borderColor: secondarColor,
+    borderColor: secondaryColor,
     padding: 10,
     alignItems: 'center',
     alignContent: 'center',
     marginBottom: 15,
   },
   input: {
-    color: secondarColor,
+    color: secondaryColor,
     fontSize: 15,
     height: 40,
     paddingLeft: 15,
@@ -214,7 +248,7 @@ const styles = StyleSheet.create({
   btn2: {
     width: '100%',
     height: 40,
-    backgroundColor: secondarColor,
+    backgroundColor: secondaryColor,
     borderRadius: 15,
     justifyContent: 'center',
     alignContent: 'center',
@@ -231,7 +265,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   text: {
-    color: secondarColor,
+    color: secondaryColor,
     marginTop: 5,
   },
 });

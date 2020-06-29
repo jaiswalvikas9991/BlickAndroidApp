@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,17 +6,72 @@ import {
   Dimensions,
   Image,
   Text,
+  Alert,
 } from 'react-native';
-import {secondarColor} from '../Constants/Theme';
+import {secondaryColor, baseURL, authKey} from '../Constants/Theme';
 import HeaderComponent from '../Components/HeaderComponent';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const {width} = Dimensions.get('window');
 
 const HomeScreen = (props: any): JSX.Element => {
+  console.log(JSON.stringify(props));
+  const [address, setAddress] = useState('');
+  const [guests, setGuests] = useState([]);
+
+  const getBuildingInfo = async (): Promise<any> => {
+    const query = {
+      query: '{ buildingInfo { address } }',
+    };
+    const response = await fetch(`${baseURL}graphql`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${await AsyncStorage.getItem(authKey)}`,
+      },
+      body: JSON.stringify(query),
+    });
+    //console.log(response);
+    return response.json();
+  };
+
+  const getGuests = async () => {
+    const query = {
+      query: '{ user { guests { car_number } } }',
+    };
+    const response = await fetch(`${baseURL}graphql`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${await AsyncStorage.getItem(authKey)}`,
+      },
+      body: JSON.stringify(query),
+    });
+    return response.json();
+  };
+
+  useEffect(() => {
+    getBuildingInfo()
+      .then((response: any) => {
+        setAddress(response.data.buildingInfo.address);
+      })
+      .catch((error) => {
+        Alert.alert(error.message);
+      });
+
+    getGuests()
+      .then((response) => {
+        setGuests(response.data.user.guests);
+      })
+      .catch(() => {
+        Alert.alert('Server Error');
+      });
+  }, []);
+
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={secondarColor} />
+      <StatusBar backgroundColor={secondaryColor} />
       <HeaderComponent navigation={props.navigation} header={'Home'} />
 
       <View style={styles.homeContainer}>
@@ -33,19 +88,19 @@ const HomeScreen = (props: any): JSX.Element => {
             <Text style={styles.value}>Address</Text>
           </View>
           <Text style={styles.address} numberOfLines={3}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s.
+            {address}
           </Text>
           <View style={[styles.heading, {marginTop: 3}]}>
             <Icon name="home" size={20} />
             <Text style={styles.value}>Flat No : </Text>
-            <Text style={styles.address}>29</Text>
+            <Text style={styles.address}>
+              {props.route.params.params.flat_id}
+            </Text>
           </View>
           <View style={[styles.heading, {marginTop: 3}]}>
             <Icon name="account" size={20} />
             <Text style={styles.value}>Guests : </Text>
-            <Text style={styles.address}>9</Text>
+            <Text style={styles.address}>{guests.length}</Text>
           </View>
         </View>
       </View>
@@ -87,7 +142,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   number: {
-    color: secondarColor,
+    color: secondaryColor,
     fontSize: 20,
   },
   text: {
@@ -114,7 +169,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 18,
-    color: secondarColor,
+    color: secondaryColor,
     marginLeft: 10,
   },
   img: {
