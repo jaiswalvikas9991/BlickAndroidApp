@@ -11,7 +11,7 @@ import HomeScreen from '../Screens/HomeScreen';
 import AnalysisScreen from '../Screens/AnalysisScreen';
 import SettingsScreen from '../Screens/SettingsScreen';
 import HelpScreen from '../Screens/HelpScreen';
-import AddGuestScreen from '../Screens/AddGuestScreen';
+import GuestScreen from '../Screens/GuestScreen';
 import MembersScreen from '../Screens/MembersScreen';
 
 const Drawer = createDrawerNavigator();
@@ -60,8 +60,8 @@ function CustomDrawerContent(props: any) {
           icon={() => <Icon name="home" size={22} color="#000" />}
         />
         <DrawerItem
-          label={() => <Text style={styles.label}>Add Guest</Text>}
-          onPress={() => props.navigation.navigate('AddGuest')}
+          label={() => <Text style={styles.label}>Guests</Text>}
+          onPress={() => props.navigation.navigate('Guests')}
           icon={() => <Icon name="account-plus" size={22} color="#000" />}
         />
         <DrawerItem
@@ -102,7 +102,7 @@ function MyDrawer(props: any) {
       <Drawer.Screen name="Settings" component={SettingsScreen} />
       <Drawer.Screen name="Help" component={HelpScreen} />
       <Drawer.Screen name="Members" component={MembersScreen} />
-      <Drawer.Screen name="AddGuest" component={AddGuestScreen} />
+      <Drawer.Screen name="Guests" component={GuestScreen} />
     </Drawer.Navigator>
   );
 }

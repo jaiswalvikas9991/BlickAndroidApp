@@ -67,7 +67,7 @@ const LoginScreen = (props: any): JSX.Element => {
       password: password,
     };
     try {
-      const response = await fetch(`${baseURL}auth/user_login`, {
+      const response = await fetch(`${baseURL}/auth/user_login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ const LoginScreen = (props: any): JSX.Element => {
         body: JSON.stringify(data),
       });
       var json = await response.json();
-      //console.log(json);
+      console.log(json);
       if (json.status !== 200) {
         return;
       }
@@ -93,8 +93,9 @@ const LoginScreen = (props: any): JSX.Element => {
         flat_id: json.data[0].flat_id,
       },
     });
+
     console.log(await AsyncStorage.getItem(authKey));
-    console.log(json.data[0].user_name);
+    console.log(json.data[0]);
   };
 
   const navigateToRegister = (): void => {

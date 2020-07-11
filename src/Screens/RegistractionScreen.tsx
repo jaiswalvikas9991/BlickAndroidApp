@@ -47,7 +47,7 @@ const RegistrationScreen = (props: any): JSX.Element => {
   };
 
   const validateEmail = (email_: string): boolean => {
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email_).toLowerCase());
   };
 
@@ -84,7 +84,7 @@ const RegistrationScreen = (props: any): JSX.Element => {
       building_id: address,
       flat_id: flatNo,
     };
-    console.log(JSON.stringify(data));
+    // console.log(JSON.stringify(data));
     try {
       const response = await fetch(`${baseURL}/auth/user_signup`, {
         method: 'POST',
@@ -94,11 +94,12 @@ const RegistrationScreen = (props: any): JSX.Element => {
         body: JSON.stringify(data),
       });
       var json = await response.json();
+      console.log(json);
       if (json.status !== 200) {
         throw new Error(json.errors);
       }
       await AsyncStorage.setItem(authKey, json.data[0].token);
-      console.log(json);
+      // console.log(json);
     } catch (error) {
       console.log(JSON.stringify(error));
       Alert.alert(error.message);

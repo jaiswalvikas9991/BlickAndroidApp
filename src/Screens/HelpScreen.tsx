@@ -1,12 +1,12 @@
 import React from 'react';
 import {View, StyleSheet, StatusBar} from 'react-native';
-import {secondarColor} from '../Constants/Theme';
+import {secondaryColor} from '../Constants/Theme';
 import HeaderComponent from '../Components/HeaderComponent';
 
 const HelpScreen = (props: any): JSX.Element => {
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={secondarColor} />
+      <StatusBar backgroundColor={secondaryColor} />
       <HeaderComponent navigation={props.navigation} header={'Help'} />
     </View>
   );

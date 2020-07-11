@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -8,60 +9,33 @@ import {
   Text,
   Alert,
 } from 'react-native';
-import {secondaryColor, baseURL, authKey} from '../Constants/Theme';
+import {secondaryColor} from '../Constants/Theme';
 import HeaderComponent from '../Components/HeaderComponent';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import AsyncStorage from '@react-native-community/async-storage';
+import DataModel from '../DataModel/DataModel';
 
 const {width} = Dimensions.get('window');
 
 const HomeScreen = (props: any): JSX.Element => {
-  console.log(JSON.stringify(props));
+  // console.log(JSON.stringify(props));
   const [address, setAddress] = useState('');
   const [guests, setGuests] = useState([]);
 
-  const getBuildingInfo = async (): Promise<any> => {
-    const query = {
-      query: '{ buildingInfo { address } }',
-    };
-    const response = await fetch(`${baseURL}graphql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${await AsyncStorage.getItem(authKey)}`,
-      },
-      body: JSON.stringify(query),
-    });
-    //console.log(response);
-    return response.json();
-  };
-
-  const getGuests = async () => {
-    const query = {
-      query: '{ user { guests { car_number } } }',
-    };
-    const response = await fetch(`${baseURL}graphql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${await AsyncStorage.getItem(authKey)}`,
-      },
-      body: JSON.stringify(query),
-    });
-    return response.json();
-  };
-
   useEffect(() => {
-    getBuildingInfo()
+    const dataModel = new DataModel({});
+    dataModel
+      .getBuildingInfo()
       .then((response: any) => {
+        console.log(response.data.buildingInfo);
         setAddress(response.data.buildingInfo.address);
       })
-      .catch((error) => {
+      .catch((error: {message: string}) => {
         Alert.alert(error.message);
       });
 
-    getGuests()
-      .then((response) => {
+    dataModel
+      .getGuests()
+      .then((response: any) => {
         setGuests(response.data.user.guests);
       })
       .catch(() => {
@@ -87,6 +61,7 @@ const HomeScreen = (props: any): JSX.Element => {
             <Icon name="map" size={18} />
             <Text style={styles.value}>Address</Text>
           </View>
+
           <Text style={styles.address} numberOfLines={3}>
             {address}
           </Text>

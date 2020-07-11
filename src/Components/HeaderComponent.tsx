@@ -6,11 +6,11 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-
-const {width} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {DrawerActions} from '@react-navigation/native';
-import {secondarColor} from '../Constants/Theme';
+import {primaryColor} from '../Constants/Theme';
+
+const {width} = Dimensions.get('window');
 
 const HeaderComponent = (props: any): JSX.Element => {
   const openDrawer = (): void => {
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     width: width,
     alignItems: 'center',
     flexDirection: 'row',
-    backgroundColor: secondarColor,
+    backgroundColor: primaryColor,
     padding: 10,
     paddingLeft: 20,
     elevation: 10,

@@ -1,12 +1,18 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import MainStackNavigator from './src/Config/MainStackNavigator';
+import {Provider} from 'react-redux';
+import {ConfigureStore} from './src/redux/configureStore';
+
+const store = ConfigureStore();
 
 function App() {
   return (
-    <View style={styles.container}>
-      <MainStackNavigator />
-    </View>
+    <Provider store={store}>
+      <View style={styles.container}>
+        <MainStackNavigator />
+      </View>
+    </Provider>
   );
 }
 
